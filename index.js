@@ -43,6 +43,10 @@ const {
   removeAccentsAndSpecialCharacters,
   splitByCharacters,
   toUserJid,
+  updateStatus,
+  nsfwstatus,
+  nsfwSetStatus,
+  autoculturaStatus,
 } = require("./utils/functions");
 
 const {
@@ -55,6 +59,7 @@ const {
   activateGroup,
   deactivateGroup,
 } = require("./database/db");
+const getCulture = require("./services/waifupics");
 
 async function runLite({ socket, data }) {
   const functions = loadLiteFunctions({ socket, data });
@@ -181,7 +186,13 @@ async function runLite({ socket, data }) {
      *
      * ✅ CASES ✅
      */
+
+    let running = false;
+    let intervalId;
+
+
     switch (removeAccentsAndSpecialCharacters(command?.toLowerCase())) {
+
       case "antilink":
         if (!args.length) {
           throw new InvalidParameterError(
@@ -339,6 +350,7 @@ async function runLite({ socket, data }) {
 
         await successReply("Bot desativado no grupo!");
         break;
+
       case "image":
         if (!fullArgs.length) {
           throw new WarningError(
@@ -354,6 +366,119 @@ async function runLite({ socket, data }) {
 
         await imageFromURL(response.url);
         break;
+
+      // NSFW AREA
+      case "nsfw":
+        if (!(await isOwner(userJid))) {
+          throw new DangerError(
+            " Vocé nao tem permissão para executar este comando!"
+          );
+        }
+
+        if (fullArgs !== "on" && fullArgs !== "off") {
+          throw new WarningError("Escolha entre on ou off.");
+        }
+
+        if (fullArgs === "on") {
+          nsfwSetStatus("on")
+          reply("Modo NSFW ativado com sucesso!")
+        }
+
+        if (fullArgs === "off") {
+          nsfwSetStatus("off")
+          reply("Modo NSFW desativado com sucesso!")
+        }
+
+        break;
+
+      case "cultura":
+        // Verifica o status do NSFW
+        const nsfw1 = await nsfwstatus();
+        if (nsfw1 === 'off') {
+          throw new WarningError(
+            `Este comando só pode ser executado com o modo NSFW🔞 Ativo. Utilize ${prefix}nsfw on para ativar o modo NSFW.`
+          );
+        }
+
+        if (!fullArgs.length || fullArgs !== 'waifu' && fullArgs !== 'neko' && fullArgs !== 'blowjob') {
+          throw new WarningError("Escolha entre waifu, neko ou blowjob.");
+        }
+
+        await waitReact();
+        const reqculture = await getCulture(fullArgs);
+        //const response = await image(fullArgs)
+
+        await successReact();
+
+        await imageFromURL(reqculture.url);
+        break;
+
+
+
+      case "autocultura":
+        // Verifica o status do NSFW
+        const nsfw2 = await nsfwstatus();
+        if (nsfw2 === 'off') {
+          throw new WarningError(
+            `Este comando só pode ser executado com o modo NSFW🔞 Ativo. Utilize ${prefix}nsfw on para ativar o modo NSFW.`
+          );
+        }
+
+        // Verifica se o argumento fornecido é válido
+        if (!fullArgs.length || !['waifu', 'neko', 'blowjob'].includes(fullArgs)) {
+          throw new WarningError("Escolha entre waifu, neko ou blowjob.");
+        }
+
+        if (running) {
+          return reply("🚀 A autocultura já está em execução! Use `autoculturaoff` para parar.");
+        }
+
+        running = true; // Marca que a autocultura está em execução
+
+        reply(`🚀 Autocultura iniciada! Use ${prefix}autoculturaoff para parar.`);
+
+        await waitReact();
+
+        // Função para fazer o GET a cada intervalo
+        const makeRequestRepeatedly = async () => {
+          const intervalTime = 5000; // 5 segundos
+
+          intervalId = setInterval(async () => {
+            if (!running) {
+              clearInterval(intervalId); // Interrompe o intervalo caso running seja false
+              console.log('Comando autocultura interrompido.');
+              return;
+            }
+
+            console.log("Executando requisição...");
+            try {
+              const reqculture = await getCulture(fullArgs);
+              await imageFromURL(reqculture.url);
+              await successReact();
+            } catch (error) {
+              console.error("Erro ao fazer a requisição:", error);
+              clearInterval(intervalId); // Encerra o loop em caso de erro
+            }
+          }, intervalTime);
+        };
+
+        makeRequestRepeatedly();
+        break;
+
+      case "autoculturaoff":
+        console.log("Parando a autocultura...");
+        if (!running) {
+          return reply("🚀 A autocultura não está em execução.");
+        }
+
+        running = false; // Atualiza o estado para interromper
+        clearInterval(intervalId); // Garante que o intervalo seja interrompido
+        reply("🚀 Autocultura parada!");
+        break; 
+
+
+
+
       case "on":
         if (!(await isOwner(userJid))) {
           throw new DangerError(

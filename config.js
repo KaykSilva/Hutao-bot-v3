@@ -13,7 +13,7 @@ exports.BOT_NAME = "Hutao Bot";
 exports.BOT_NUMBER = "5585976083629";
 
 // Número do dono do bot (apenas números).
-exports.OWNER_NUMBER = "5598981895794";
+exports.OWNER_NUMBER = "559881895794";
 
 // Diretório de arquivos de mídia.
 exports.ASSETS_DIR = path.resolve(__dirname, "assets");

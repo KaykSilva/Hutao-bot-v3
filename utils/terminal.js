@@ -59,6 +59,7 @@ function bannerLog() {
   console.log(`\x1b[${textColor.cyan}m🤖 Versão: \x1b[0m${version}\n`);
 }
 
+
 async function textInput(message) {
   const rl = readline.createInterface({
     input: process.stdin,

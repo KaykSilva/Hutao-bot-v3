@@ -590,22 +590,152 @@ function getRandomName(extension) {
   return `${fileName}.${extension}`;
 }
 
-module.exports = {
-  checkPrefix,
-  deleteTempFile,
-  download,
-  formatCommand,
-  getBuffer,
-  getContent,
-  getJSON,
-  getProfileImageData,
-  getRandomName,
-  getRandomNumber,
-  isLink,
-  loadLiteFunctions,
-  onlyLettersAndNumbers,
-  onlyNumbers,
-  removeAccentsAndSpecialCharacters,
-  splitByCharacters,
-  toUserJid,
-};
+//nafw area
+const nfwfillter = path.resolve(__dirname, '../database/nsfw.json');
+const autoculturaFillter = path.resolve(__dirname, '../database/autocultura.json');
+
+function nsfwSetStatus(newStatus) {
+  fs.readFile(nfwfillter, 'utf8', (err, data) => {
+    if (err) {
+      console.error("Erro ao ler o arquivo:", err);
+      return;
+    }
+
+    try {
+
+      const config = JSON.parse(data);
+
+      config.status = newStatus;
+
+      fs.writeFile(nfwfillter, JSON.stringify(config, null, 2), (err) => {
+        if (err) {
+          console.error("Erro ao salvar o arquivo:", err);
+        } else {
+          console.log(`Status alterado para: ${newStatus}`);
+        }
+      });
+    } catch (parseError) {
+      console.error("Erro ao parsear o JSON:", parseError);
+
+      const defaultConfig = { status: "off" };
+      fs.writeFile(nfwfillter, JSON.stringify(defaultConfig, null, 2), (err) => {
+        if (err) {
+          console.error("Erro ao salvar o arquivo padrão:", err);
+        } else {
+          console.log("Arquivo JSON malformado. Criando um arquivo padrão.");
+        }
+      });
+    }
+  });
+}
+
+async function nsfwstatus() {
+  return new Promise((resolve, reject) => {
+    fs.readFile(nfwfillter, 'utf8', (err, data) => {
+      if (err) {
+        console.error("Erro ao ler o arquivo:", err);
+        return reject(err); // Rejeita a Promise em caso de erro
+      }
+
+      try {
+        const config = JSON.parse(data);
+        resolve(config.status); // Resolve a Promise com o valor de 'status'
+      } catch (parseError) {
+        console.error("Erro ao parsear o JSON:", parseError);
+        reject(parseError); // Rejeita a Promise em caso de erro no parse
+      }
+    });
+  });
+}
+
+function autoculturaON(newStatus) {
+  fs.readFile(autoculturaFillter, 'utf8', (err, data) => {
+    if (err) {
+      console.error("Erro ao ler o arquivo:", err);
+      return;
+    }
+
+    try {
+
+      const config = JSON.parse(data);
+
+      config.status = newStatus;
+
+      fs.writeFile(autoculturaFillter, JSON.stringify(config, null, 2), (err) => {
+        if (err) {
+          console.error("Erro ao salvar o arquivo:", err);
+        } else {
+          console.log(`Status alterado para: ${newStatus}`);
+        }
+      });
+    } catch (parseError) {
+      console.error("Erro ao parsear o JSON:", parseError);
+
+      const defaultConfig = { status: "off" };
+      fs.writeFile(autoculturaFillter, JSON.stringify(defaultConfig, null, 2), (err) => {
+        if (err) {
+          console.error("Erro ao salvar o arquivo padrão:", err);
+        } else {
+          console.log("Arquivo JSON malformado. Criando um arquivo padrão.");
+        }
+      });
+    }
+  });
+}
+
+async function autoculturaStatus() {
+  return new Promise((resolve, reject) => {
+    fs.readFile(autoculturaFillter, 'utf8', (err, data) => {
+      if (err) {
+        console.error("Erro ao ler o arquivo:", err);
+        return reject(err); // Rejeita a Promise em caso de erro
+      }
+
+      try {
+        const config = JSON.parse(data);
+        resolve(config.status); // Resolve a Promise com o valor de 'status'
+      } catch (parseError) {
+        console.error("Erro ao parsear o JSON:", parseError);
+        reject(parseError); // Rejeita a Promise em caso de erro no parse
+      }
+    });
+  });
+}
+
+function blackout(status) {
+  // Se o parâmetro for 'off', retorna false para desativar
+  if (status === "off") {
+    return false;
+  }
+  // Se o parâmetro for 'on', retorna true para ativar
+  if (status === "on") {
+    return true;
+  }
+  // Caso contrário, retorna true por padrão (se não for 'off', assume-se que está 'on')
+  return true;
+}
+
+  module.exports = {
+    checkPrefix,
+    deleteTempFile,
+    download,
+    formatCommand,
+    getBuffer,
+    getContent,
+    getJSON,
+    getProfileImageData,
+    getRandomName,
+    getRandomNumber,
+    isLink,
+    loadLiteFunctions,
+    onlyLettersAndNumbers,
+    onlyNumbers,
+    removeAccentsAndSpecialCharacters,
+    splitByCharacters,
+    toUserJid,
+    nsfwSetStatus,
+    nsfwstatus,
+    autoculturaON,
+    autoculturaStatus,
+    blackout
+  };
