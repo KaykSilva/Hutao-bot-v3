@@ -136,7 +136,7 @@ async function runLite({ socket, data }) {
       await reply("Salve, salve!");
       return;
     }
-    if (body === "alcool" || body === "alcoolatra" || body === "alcoolizada" || body === "alcoolizado") {
+    if (body === "álcool" || body === "álcoolatra" || body === "álcoolizada" || body === "álcoolizado") {
       await audioFromURL("./audio/alcool.mp3");
       return;
     }
