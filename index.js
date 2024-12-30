@@ -136,7 +136,19 @@ async function runLite({ socket, data }) {
       await reply("Salve, salve!");
       return;
     }
-    if (body === "álcool" || body === "álcoolatra" || body === "álcoolizada" || body === "álcoolizado") {
+    if (body.toLowerCase().includes("álcool")) {
+      await audioFromURL("./audio/alcool.mp3");
+      return;
+    }
+    if (body.toLowerCase().includes("álcoolatra")) {
+      await audioFromURL("./audio/alcool.mp3");
+      return;
+    }
+    if (body.toLowerCase().includes("álcoolizado")) {
+      await audioFromURL("./audio/alcool.mp3");
+      return;
+    }
+    if (body.toLowerCase().includes("álcoolizada")) {
       await audioFromURL("./audio/alcool.mp3");
       return;
     }
