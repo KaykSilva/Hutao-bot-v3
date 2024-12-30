@@ -136,7 +136,11 @@ async function runLite({ socket, data }) {
       await reply("Salve, salve!");
       return;
     }
-  }
+    if (body === "alcool" || body === "alcoolatra" || body === "alcoolizada" || body === "alcoolizado") {
+      await audioFromURL("./audio/alcool.mp3");
+      return;
+    }
+  } 
 
   /**
    * 🚫 Anti-link 🔗
@@ -474,7 +478,7 @@ async function runLite({ socket, data }) {
         running = false; // Atualiza o estado para interromper
         clearInterval(intervalId); // Garante que o intervalo seja interrompido
         reply("🚀 Autocultura parada!");
-        break; 
+        break;
 
 
 
