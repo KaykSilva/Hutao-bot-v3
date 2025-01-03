@@ -152,7 +152,7 @@ async function runLite({ socket, data }) {
       await audioFromURL("./audio/alcool.mp3");
       return;
     }
-  } 
+  }
 
   /**
    * 🚫 Anti-link 🔗
@@ -533,7 +533,27 @@ async function runLite({ socket, data }) {
         await audioFromURL(playAudioData.url);
 
         break;
+
+      
+
+
+      case "tiktok":
+        if (!args.length) {
+          throw new InvalidParameterError(
+            "Você precisa me dizer o que deseja buscar!"
+          );
+        }
+
+        await waitReact();
+
+        await successReact();
+
+        await videoFromURL(`https://api.bronxyshost.com.br/api-bronxys/tiktok?url=${fullArgs}&apikey=ShzZx`);
+
+        break;
+
       case "playvideo":
+
         if (!args.length) {
           throw new InvalidParameterError(
             "Você precisa me dizer o que deseja buscar!"
